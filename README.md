@@ -1,0 +1,2 @@
+# poetry-assistant
+Poetry Assistant
