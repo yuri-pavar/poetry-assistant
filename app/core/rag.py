@@ -2,10 +2,11 @@ import os
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
+from app.core.config import CHROMA_DIR
 
 
 class RAGService:
-    def __init__(self, embed_model, data, persist_directory='chroma_dir'):
+    def __init__(self, embed_model, data, persist_directory=CHROMA_DIR):
         self.embed_model = embed_model
         self.persist_directory = persist_directory
         self.ini_data = data

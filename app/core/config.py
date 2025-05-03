@@ -1,3 +1,10 @@
+from pathlib import Path
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DATA_PATH = BASE_DIR / "data" / "russianPoetryWithTheme.csv"
+CHROMA_DIR = BASE_DIR / "data" / "chroma_db"
+
 SYSTEM_PROMPT = (
     "Ты виртуальный ассистент. Твоя задача - помогать людям с поэзией, отвечая на их запросы."
 )
@@ -55,7 +62,7 @@ USER_PROMPT_MAIN = '''
 MODEL_NAME = "t-tech/T-lite-it-1.0"
 EMBED_MODEL_NAME = "sergeyzh/BERTA"
 
-DATA_PATH = '/content/russianPoetryWithTheme.csv'
+# DATA_PATH = '/content/russianPoetryWithTheme.csv'
 AUTHORS_COL = 'author'
 POEMS_COL = 'name'
 TXT_COL = 'text'

@@ -1,14 +1,11 @@
 import pandas as pd
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from langchain.embeddings import HuggingFaceEmbeddings
-# from app.core.config import DATA_PATH, MODEL_NAME, EMBED_MODEL
-# from app.preprocessor import Preprocessor
-# from app.rag import RAGService
-# from app.context import ContextConstructor
-from config import DATA_PATH, MODEL_NAME, EMBED_MODEL, AUTHORS_COL, POEMS_COL, RAG_METADATA_COLS, RAG_TXT_COL, TXT_COL
-from preprocessor import Preprocessor
-from rag import RAGService
-from context_constructor import ContextConstructor
+import torch
+from app.core.config import DATA_PATH, MODEL_NAME, EMBED_MODEL_NAME, AUTHORS_COL, POEMS_COL, RAG_METADATA_COLS, RAG_TXT_COL, TXT_COL
+from app.core.preprocessor import Preprocessor
+from app.core.rag import RAGService
+from app.core.context_constructor import ContextConstructor
 
 
 _pipeline = None
@@ -21,17 +18,18 @@ def get_pipeline():
 
     data = pd.read_csv(DATA_PATH)
 
-    quant_config = BitsAndBytesConfig(load_in_8bit=True)
+    # quant_config = BitsAndBytesConfig(load_in_8bit=True)
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_NAME,
-        quantization_config=quant_config,
+        # quantization_config=quant_config,
+        torch_dtype=torch.float16,
         device_map="auto",
         trust_remote_code=True
     )
     model.eval()
 
-    embed_model = HuggingFaceEmbeddings(model_name=EMBED_MODEL)
+    embed_model = HuggingFaceEmbeddings(model_name=EMBED_MODEL_NAME)
 
     preproc = Preprocessor(
         model=model,

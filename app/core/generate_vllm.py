@@ -1,6 +1,6 @@
 import httpx
 import os
-from config import VLLM_API_URL, MODEL_NAME
+from app.core.config import VLLM_API_URL, MODEL_NAME
 
 
 async def async_generate(prompt: str, system_prompt: str = "", max_tokens: int = 512, temperature: float = 0.7) -> str:

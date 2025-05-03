@@ -3,7 +3,7 @@ from fastapi.concurrency import run_in_threadpool
 from app.models.schemas import QueryRequest
 from app.core.pipeline import get_pipeline
 from app.core.generate_vllm import async_generate
-from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITE, USER_PROMPT_MAIN
+from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN
 
 router = APIRouter()
 
@@ -15,7 +15,7 @@ async def generate_poetry(request: QueryRequest):
     ner = await run_in_threadpool(preprocessor.get_query_ner, query, SYSTEM_PROMPT, USER_PROMPT_NER)
 
     if not ner.get("is_direct"):
-        keywords = await run_in_threadpool(preprocessor.get_query_rewrite, query, SYSTEM_PROMPT, USER_PROMPT_REWRITE)
+        keywords = await run_in_threadpool(preprocessor.get_query_rewrite, query, SYSTEM_PROMPT, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
 
     context = await run_in_threadpool(ctx_svc.prepare_context, query, ner)
