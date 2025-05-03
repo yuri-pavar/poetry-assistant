@@ -3,7 +3,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_PATH = BASE_DIR / "data" / "russianPoetryWithTheme.csv"
-CHROMA_DIR = BASE_DIR / "data" / "chroma_db"
+CHROMA_DIR = str(BASE_DIR / "data" / "chroma_db")
 
 SYSTEM_PROMPT = (
     "Ты виртуальный ассистент. Твоя задача - помогать людям с поэзией, отвечая на их запросы."

@@ -2,12 +2,15 @@ import json
 import re
 import pandas as pd
 import torch
+# from app.core.generate_vllm import async_generate
+from app.core.generate_vllm import generate_sync
 
 
 class Preprocessor:
-    def __init__(self, model, tokenizer, data, authors_col, poems_col):
-        self.tokenizer = tokenizer
-        self.model = model
+    # def __init__(self, model, tokenizer, data, authors_col, poems_col):
+    def __init__(self, data, authors_col, poems_col):
+        # self.tokenizer = tokenizer
+        # self.model = model
         self.data_ini = data.copy()
         self.authors_col = authors_col
         self.poems_col = poems_col
@@ -117,27 +120,66 @@ class Preprocessor:
 
         return self._structout_json_parser_rewrite(splitted)
 
-    def generate(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
-        uprompt = user_prompt.format(query=query)
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": uprompt}
-        ]
-        input_ids = self.tokenizer.apply_chat_template(messages, return_tensors="pt").to(self.model.device)
+    # def generate(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    #     uprompt = user_prompt.format(query=query)
+    #     messages = [
+    #         {"role": "system", "content": system_prompt},
+    #         {"role": "user", "content": uprompt}
+    #     ]
+    #     input_ids = self.tokenizer.apply_chat_template(messages, return_tensors="pt").to(self.model.device)
 
-        with torch.no_grad():
-            output = self.model.generate(
-                input_ids,
-                max_new_tokens=max_new_tokens,
-                do_sample=True,
-                temperature=temperature,
-                top_p=top_p,
-                pad_token_id=self.tokenizer.eos_token_id
-            )
-        return self.tokenizer.decode(output[0], skip_special_tokens=True)
+    #     with torch.no_grad():
+    #         output = self.model.generate(
+    #             input_ids,
+    #             max_new_tokens=max_new_tokens,
+    #             do_sample=True,
+    #             temperature=temperature,
+    #             top_p=top_p,
+    #             pad_token_id=self.tokenizer.eos_token_id
+    #         )
+    #     return self.tokenizer.decode(output[0], skip_special_tokens=True)
 
+    # def generate(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    #     uprompt = user_prompt.format(query=query)
+    #     return generate_sync(
+    #         prompt=uprompt,
+    #         system_prompt=system_prompt,
+    #         max_tokens=max_new_tokens,
+    #         temperature=temperature,
+    #         top_p=top_p
+    #     )
+
+    # def get_query_ner(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    #     return self.process_response_ner(self.generate(query, system_prompt, user_prompt, max_new_tokens, temperature, top_p))
+    # async def get_query_ner(self, query, system_prompt, user_prompt):
+    #     generated = await self.generate_vllm(query, system_prompt, user_prompt)
+    #     return self.process_response_ner(generated)
     def get_query_ner(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
-        return self.process_response_ner(self.generate(query, system_prompt, user_prompt, max_new_tokens, temperature, top_p))
+        uprompt = user_prompt.format(query=query)
+        generated = generate_sync(
+            prompt=uprompt,
+            system_prompt=system_prompt,
+            max_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=top_p
+        )
+        return self.process_response_ner(generated)
 
+
+    # def get_query_rewrite(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    #     return self.process_response_rewrite(self.generate(query, system_prompt, user_prompt, max_new_tokens, temperature, top_p))
+    # async def get_query_rewrite(self, query, system_prompt, user_prompt):
+    #     generated = await self.generate_vllm(query, system_prompt, user_prompt)
+    #     return self.process_response_rewrite(generated)
     def get_query_rewrite(self, query, system_prompt, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
-        return self.process_response_rewrite(self.generate(query, system_prompt, user_prompt, max_new_tokens, temperature, top_p))
+        uprompt = user_prompt.format(query=query)
+        generated = generate_sync(
+            prompt=uprompt,
+            system_prompt=system_prompt,
+            max_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=top_p
+        )
+        return self.process_response_rewrite(generated)
+
+
