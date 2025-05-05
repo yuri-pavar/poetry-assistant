@@ -62,7 +62,6 @@ USER_PROMPT_MAIN = '''
 MODEL_NAME = "t-tech/T-lite-it-1.0"
 EMBED_MODEL_NAME = "sergeyzh/BERTA"
 
-# DATA_PATH = '/content/russianPoetryWithTheme.csv'
 AUTHORS_COL = 'author'
 POEMS_COL = 'name'
 TXT_COL = 'text'

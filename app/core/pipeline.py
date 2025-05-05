@@ -1,20 +1,15 @@
+import os
 import pandas as pd
 # from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from langchain.embeddings import HuggingFaceEmbeddings
 import torch
-from app.core.config import DATA_PATH, MODEL_NAME, EMBED_MODEL_NAME, AUTHORS_COL, POEMS_COL, RAG_METADATA_COLS, RAG_TXT_COL, TXT_COL
+from app.core.config import DATA_PATH, MODEL_NAME, EMBED_MODEL_NAME, AUTHORS_COL, POEMS_COL, RAG_METADATA_COLS, RAG_TXT_COL, TXT_COL, CHROMA_DIR
 from app.core.preprocessor import Preprocessor
 from app.core.rag import RAGService
 from app.core.context_constructor import ContextConstructor
 
 
-_pipeline = None
-
-
 def get_pipeline():
-    global _pipeline
-    if _pipeline is not None:
-        return _pipeline
 
     data = pd.read_csv(DATA_PATH)
 
@@ -51,7 +46,15 @@ def get_pipeline():
     #     metadata_cols = RAG_METADATA_COLS,
     #     txt_col = RAG_TXT_COL
     # )
-    rag.load_db()
+    if os.path.exists(CHROMA_DIR) and os.listdir(CHROMA_DIR):
+        print("[RAG] Loading existing Chroma DB...")
+        rag.load_db()
+    else:
+        print("[RAG] No existing DB found. Creating new Chroma DB...")
+        rag.create_from_data(
+            metadata_cols=RAG_METADATA_COLS,
+            txt_col=RAG_TXT_COL
+        )
 
     cntx = ContextConstructor(
         data=data,
@@ -60,6 +63,5 @@ def get_pipeline():
         txt_col=TXT_COL,
         rag_svc=rag,
     )
-    _pipeline = (preproc, rag, cntx)
 
-    return _pipeline
+    return preproc, rag, cntx
