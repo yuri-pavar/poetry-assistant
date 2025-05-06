@@ -1,4 +1,5 @@
-from app.celery.worker import celery_app
+# from app.celery.worker import celery_app
+from app.celery import celery_app
 from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN
 from app.core.pipeline import get_pipeline
 from app.core.generate_vllm import async_generate
