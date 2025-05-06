@@ -1,4 +1,5 @@
 fastapi
+celery
 uvicorn[standard]
 httpx
 python-dotenv
@@ -15,4 +16,4 @@ sentence-transformers
 tqdm
 jupyter
 ipython
-vllm[torch]
+psycopg2-binary

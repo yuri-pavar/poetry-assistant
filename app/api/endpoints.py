@@ -95,15 +95,15 @@ async def generate_poetry(request: QueryRequest):
     preprocessor, rag_svc, ctx_svc = state.pipeline
     
     query = request.query
-    ner = await preprocessor.get_query_ner(query, SYSTEM_PROMPT, USER_PROMPT_NER)
-
+    ner = await preprocessor.get_query_ner(query, USER_PROMPT_NER)
+    # print(ner)
     if not ner.get("is_direct"):
-        keywords = await preprocessor.get_query_rewrite(query, SYSTEM_PROMPT, USER_PROMPT_REWRITING)
+        keywords = await preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
-
+    # print(keywords)
     context = ctx_svc.prepare_context(query, ner)
     prompt = USER_PROMPT_MAIN.format(context=context, query=query)
-
+    print(prompt)
     response = await async_generate(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
     final_obj = Output(query=query, response=response)
 

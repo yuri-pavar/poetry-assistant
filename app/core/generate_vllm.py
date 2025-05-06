@@ -26,7 +26,7 @@ from app.core.config import VLLM_API_URL, MODEL_NAME, SYSTEM_PROMPT
 #         return ""
 
 
-async def async_generate(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 512, temperature: float = 0.7) -> str:
+async def async_generate(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 512, temperature: float = 0.7, top_p: float = 0.9) -> str:
     messages = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
@@ -36,8 +36,10 @@ async def async_generate(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_to
         "model": MODEL_NAME,
         "messages": messages,
         "max_tokens": max_tokens,
-        "temperature": temperature
+        "temperature": temperature, 
+        "top_p": top_p
     }
+    print("[DEBUG] Payload:", payload)
 
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:

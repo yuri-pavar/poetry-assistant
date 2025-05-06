@@ -70,4 +70,5 @@ RAG_METADATA_COLS = ['date_to', 'author', 'name']
 RAG_TXT_COL = 'text'
 RAG_SEARCH_METHOD = 'marginal'
 
-VLLM_API_URL = 'http://localhost:8000/v1/chat/completions'
+# VLLM_API_URL = 'http://localhost:8000/v1/chat/completions'
+VLLM_API_URL = 'http://vllm:8000/v1/chat/completions'
