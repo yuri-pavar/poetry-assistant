@@ -9,3 +9,4 @@ venv/
 /data/chroma_dir2/
 __pycache__/
 *.py[cod]
+.env

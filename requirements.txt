@@ -1,19 +1,31 @@
+# fastapi
+# celery
+# uvicorn[standard]
+# httpx
+# python-dotenv
+# transformers>=4.39
+# accelerate>=0.26.0
+# torch>=2.0
+# bitsandbytes>=0.41
+# pandas
+# numpy<1.24
+# langchain
+# langchain-community
+# chromadb>=0.4.15  # Requires sqlite3 >= 3.35
+# sentence-transformers
+# tqdm
+# jupyter
+# ipython
+# psycopg2-binary
+
 fastapi
-celery
 uvicorn[standard]
+celery
 httpx
 python-dotenv
-transformers>=4.39
-accelerate>=0.26.0
-torch>=2.0
-bitsandbytes>=0.41
 pandas
-numpy<1.24
-langchain
-langchain-community
-chromadb>=0.4.15  # Requires sqlite3 >= 3.35
-sentence-transformers
 tqdm
-jupyter
 ipython
+jupyter
 psycopg2-binary
+sqlalchemy>=1.4

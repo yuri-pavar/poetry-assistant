@@ -7,7 +7,7 @@ from app.core.config import VLLM_API_URL, MODEL_NAME, SYSTEM_PROMPT
 def generate_sync(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 400, temperature: float = 0.7, top_p: float = 0.9) -> str:
     headers = {"Content-Type": "application/json"}
     payload = {
-        "model": "t-tech/T-lite-it-1.0",  # или другой
+        "model": MODEL_NAME,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt}

@@ -1,13 +1,13 @@
 # from app.celery.worker import celery_app
-from app.celery import celery_app
-from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN
-from app.core.pipeline import get_pipeline
-# from app.core.generate_vllm import async_generate
-from app.core.generate_vllm import generate_sync
-import asyncio
+# from app.celery import celery_app
+# from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN
+# # from app.core.pipeline import get_pipeline
+# # from app.core.generate_vllm import async_generate
+# from app.core.generate_vllm import generate_sync
+# import asyncio
 
-pipeline = get_pipeline()
-preprocessor, rag_svc, ctx_svc = pipeline
+# pipeline = get_pipeline()
+# preprocessor, rag_svc, ctx_svc = pipeline
 
 # @celery_app.task(name="app.celery.tasks.generate_poetry_task")
 # def generate_poetry_task(query: str):
@@ -103,22 +103,32 @@ preprocessor, rag_svc, ctx_svc = pipeline
 
 #     return {"query": query, "response": response}
 
+from app.celery import celery_app
+from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN, DATA_PATH, AUTHORS_COL, POEMS_COL
+from app.core.generate_vllm import generate_sync
+from app.core.rag_client import get_context_from_rag
+from app.core.preprocessor import Preprocessor
+import pandas as pd
+
+
+data = pd.read_csv(DATA_PATH)
+
+preprocessor = Preprocessor(
+        data=data,
+        authors_col=AUTHORS_COL,
+        poems_col=POEMS_COL
+    )
 
 
 @celery_app.task(name="app.celery.tasks.generate_poetry_task")
 def generate_poetry_task(query: str):
-    print("[DEBUG] START")
     ner = preprocessor.get_query_ner(query, USER_PROMPT_NER)
-    print("[DEBUG] NER: ", ner)
     if not ner.get("is_direct"):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
-    print("[DEBUG] NER+keywords: ", ner)
-    context = ctx_svc.prepare_context(query, ner)
-    print("[DEBUG] context: ", context)
+    context = get_context_from_rag(query, ner)
+    print('[CONTEXT]', context)
     prompt = USER_PROMPT_MAIN.format(context=context, query=query)
-    print("[DEBUG] prompt: ", prompt)
     response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
-    print("[DEBUG] response: ", response)
     
     return {"query": query, "response": response}

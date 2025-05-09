@@ -1,7 +1,7 @@
 import json
 import re
 import pandas as pd
-import torch
+# import torch
 # from app.core.generate_vllm import async_generate
 from app.core.generate_vllm import generate_sync
 # from app.core.config import SYSTEM_PROMPT
@@ -328,7 +328,7 @@ class Preprocessor:
             temperature=temperature,
             # top_p=top_p
         )
-        print(generated)
+        # print(generated)
         return self.process_response_ner(generated)
 
     def get_query_rewrite(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
