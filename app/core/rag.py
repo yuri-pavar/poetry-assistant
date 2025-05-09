@@ -51,15 +51,19 @@ class RAGService:
         )
 
     def search(self, query, prefix_query='search_query: ', method="similarity", k=5, filters=None):
+        print("[DEBUG] RAG INN:", self.persist_directory)
         if self.db is None:
             raise ValueError("Database is not loaded. Please create or load a database first.")
+        print("[DEBUG] RAG DB:", self.db is None)
 
         final_query = f'{prefix_query}{query}'
+        print("[DEBUG] RAG final_query:", final_query)
         if method == "similarity":
             results = self.db.similarity_search(final_query, k=k, filter=filters) if filters else self.db.similarity_search(final_query, k=k)
         elif method == "marginal":
             results = self.db.max_marginal_relevance_search(final_query, k=k, filter=filters) if filters else self.db.max_marginal_relevance_search(final_query, k=k)
         else:
             raise ValueError(f"Unknown search method: {method}")
+        print("[DEBUG] RAG results:", results)
 
         return results

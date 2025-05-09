@@ -59,12 +59,14 @@ class ContextConstructor:
         return chunks[0] if chunks else texts
 
     def prepare_context(self, query, response, rag_method="similarity", k=5):
+        print("[DEBUG] prepare_context INN")
         filters = {}
         if response['is_direct'] == 1:
             texts = self._get_full_texts(response['authors'], response['poems'])
             context = self._truncate_texts(texts) if texts else ""
         else:
             rag_query = ', '.join(response['keywords']) if response.get('keywords') else query
+            print("[DEBUG] prepare_context ELSE", rag_query)
 
             if response.get("authors"):
                 filters["author"] = {"$in": response["authors"]}
@@ -72,6 +74,7 @@ class ContextConstructor:
                 filters["name"] = {"$in": response["poems"]}
 
             results = self.rag_svc.search(rag_query, method=rag_method, k=k, filters=filters)
+            print("[DEBUG] prepare_context results", results)
             if results:
                 context = []
                 for doc in results:
@@ -80,5 +83,6 @@ class ContextConstructor:
                 context = "\n\n".join(context)
             else:
                 context = ""
+            print("[DEBUG] prepare_context context", context)
 
         return context

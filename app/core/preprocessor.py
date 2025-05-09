@@ -2,8 +2,8 @@ import json
 import re
 import pandas as pd
 import torch
-from app.core.generate_vllm import async_generate
-# from app.core.generate_vllm import generate_sync
+# from app.core.generate_vllm import async_generate
+from app.core.generate_vllm import generate_sync
 # from app.core.config import SYSTEM_PROMPT
 
 
@@ -295,25 +295,49 @@ class Preprocessor:
 
         return self._structout_json_parser_rewrite(splitted)
 
-    async def get_query_ner(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    # async def get_query_ner(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    #     uprompt = user_prompt.format(query=query)
+    #     generated = await async_generate(
+    #         prompt=uprompt,
+    #         # system_prompt=SYSTEM_PROMPT,
+    #         max_tokens=max_new_tokens,
+    #         temperature=temperature,
+    #         # top_p=top_p
+    #     )
+    #     print(generated)
+    #     return self.process_response_ner(generated)
+
+    # async def get_query_rewrite(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    #     uprompt = user_prompt.format(query=query)
+    #     generated = await async_generate(
+    #         prompt=uprompt,
+    #         # system_prompt=SYSTEM_PROMPT,
+    #         max_tokens=max_new_tokens,
+    #         temperature=temperature,
+    #         # top_p=top_p
+    #     )
+    #     return self.process_response_rewrite(generated)
+
+
+    def get_query_ner(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
         uprompt = user_prompt.format(query=query)
-        generated = await async_generate(
+        generated = generate_sync(
             prompt=uprompt,
             # system_prompt=SYSTEM_PROMPT,
             max_tokens=max_new_tokens,
             temperature=temperature,
-            top_p=top_p
+            # top_p=top_p
         )
         print(generated)
         return self.process_response_ner(generated)
 
-    async def get_query_rewrite(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
+    def get_query_rewrite(self, query, user_prompt, max_new_tokens=250, temperature=0.7, top_p=0.9):
         uprompt = user_prompt.format(query=query)
-        generated = await async_generate(
+        generated = generate_sync(
             prompt=uprompt,
             # system_prompt=SYSTEM_PROMPT,
             max_tokens=max_new_tokens,
             temperature=temperature,
-            top_p=top_p
+            # top_p=top_p
         )
         return self.process_response_rewrite(generated)

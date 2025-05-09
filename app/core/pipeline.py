@@ -9,6 +9,11 @@ from app.core.rag import RAGService
 from app.core.context_constructor import ContextConstructor
 
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print("[DEBUG] CUDACUDACUDACUDACUDACUDACUDACUDA available in Celery:", device)
+
+
+
 def get_pipeline():
 
     data = pd.read_csv(DATA_PATH)
@@ -24,7 +29,11 @@ def get_pipeline():
     # )
     # model.eval()
 
-    embed_model = HuggingFaceEmbeddings(model_name=EMBED_MODEL_NAME)
+    # embed_model = HuggingFaceEmbeddings(model_name=EMBED_MODEL_NAME)
+    embed_model = HuggingFaceEmbeddings(
+        model_name=EMBED_MODEL_NAME,
+        model_kwargs={"device": device}
+    )
 
     # preproc = Preprocessor(
     #     model=model,
@@ -61,7 +70,7 @@ def get_pipeline():
         authors_col=AUTHORS_COL,
         poems_col=POEMS_COL,
         txt_col=TXT_COL,
-        rag_svc=rag,
+        rag_svc=rag
     )
 
     return preproc, rag, cntx
