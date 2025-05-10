@@ -42,10 +42,6 @@ async def cmd_cancel(message: Message, state: FSMContext):
     await state.clear()
     await message.answer("⛔️ Ввод отменён. Начнём сначала?", reply_markup=main_menu_keyboard)
 
-# @dp.message()
-# async def fallback(message: Message):
-#     await message.answer("🤖 Пожалуйста, воспользуйтесь кнопками меню или введите команду /help")
-
 async def set_main_menu(bot: Bot):
     commands = [
         BotCommand(command="/help", description="Справка по работе бота"),

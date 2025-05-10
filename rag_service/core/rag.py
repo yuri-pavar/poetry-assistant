@@ -88,7 +88,7 @@ class RAGService:
             raise ValueError(f"Unknown search method: {method}")
 
         if rerank:
-          print(f"Запрос: {ini_query}. Образы: {query}")
           results = self._rerank(f"Запрос: {ini_query}. Образы: {query}", results)
+          results = results[:rerank_k]
 
         return results

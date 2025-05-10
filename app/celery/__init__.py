@@ -1,12 +1,6 @@
 import os
 from celery import Celery
-# import app.celery.tasks
 
-# celery_app = Celery(
-#     "poetry_tasks",
-#     broker="pyamqp://guest@rabbitmq//",
-#     backend="db+postgresql://user:password@postgres:5432/poetry_db",
-# )
 
 celery_app = Celery(
     "poetry_tasks",

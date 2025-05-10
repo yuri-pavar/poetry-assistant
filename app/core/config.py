@@ -60,18 +60,10 @@ USER_PROMPT_MAIN = '''
 '''
 
 MODEL_NAME = "t-tech/T-lite-it-1.0"
-# EMBED_MODEL_NAME = "sergeyzh/BERTA"
 
 AUTHORS_COL = 'author'
 POEMS_COL = 'name'
 TXT_COL = 'text'
 
-# RAG_METADATA_COLS = ['date_to', 'author', 'name']
-# RAG_TXT_COL = 'text'
-# RAG_SEARCH_METHOD = 'marginal'
-
-# # VLLM_API_URL = 'http://localhost:8000/v1/chat/completions'
 VLLM_API_URL = 'http://vllm:8000/v1/chat/completions'
-
-# RAG_SERVICE_URL = 'http://localhost:8100'
 RAG_SERVICE_URL = 'http://rag:8100'

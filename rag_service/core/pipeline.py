@@ -19,7 +19,6 @@ def get_pipeline():
         model_kwargs={"device": device}
     )
 
-    # reranker = FlagReranker(RERANK_MODEL_NAME, use_fp16=True).to(device)
     reranker = FlagReranker(RERANK_MODEL_NAME, use_fp16=True, device=device)
 
     rag = RAGService(embed_model, reranker, data)

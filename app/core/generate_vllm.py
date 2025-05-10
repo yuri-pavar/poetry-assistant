@@ -1,10 +1,9 @@
-# import httpx
 import requests
 import os
 from app.core.config import VLLM_API_URL, MODEL_NAME, SYSTEM_PROMPT
 
 
-def generate_sync(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 400, temperature: float = 0.7, top_p: float = 0.9) -> str:
+def generate_sync(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 1024, temperature: float = 0.7, top_p: float = 0.9) -> str:
     headers = {"Content-Type": "application/json"}
     payload = {
         "model": MODEL_NAME,
@@ -21,33 +20,11 @@ def generate_sync(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: i
         response.raise_for_status()
         result = response.json()
         fin_res = result["choices"][0]["message"]["content"]
-        print('[FIN_RES]', fin_res)
-        return fin_res
     except Exception as e:
         print(f"[generate_sync] Ошибка запроса к vLLM: {e}")
-        return ""
+        fin_res = ""
+    
+    if "." in fin_res:
+        fin_res = fin_res.rsplit(".", 1)[0] + "."
 
-
-
-# async def async_generate(prompt: str, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 512, temperature: float = 0.7, top_p: float = 0.9) -> str:
-#     messages = []
-#     if system_prompt:
-#         messages.append({"role": "system", "content": system_prompt})
-#     messages.append({"role": "user", "content": prompt})
-
-#     payload = {
-#         "model": MODEL_NAME,
-#         "messages": messages,
-#         "max_tokens": max_tokens,
-#         "temperature": temperature, 
-#         # "top_p": top_p
-#     }
-#     print("[DEBUG] Payload:", payload)
-
-#     try:
-#         async with httpx.AsyncClient(timeout=60.0) as client:
-#             response = await client.post(VLLM_API_URL, json=payload)
-#             response.raise_for_status()
-#             return response.json()["choices"][0]["message"]["content"]
-#     except Exception as e:
-#         return f"[Ошибка генерации]: {str(e)}"
+    return fin_res
