@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.models.schemas import QueryRequest
-from app.celery.tasks import generate_poetry_task
+from app.celery.tasks import generate_poetry_task, generate_quote_task, generate_new_poem_task
 from app.celery.worker import celery_app
 
 router = APIRouter()
@@ -8,6 +8,16 @@ router = APIRouter()
 @router.post("/generate_async")
 async def generate_poetry_async(request: QueryRequest):
     task = generate_poetry_task.delay(request.query)
+    return {"task_id": task.id, "status": "queued"}
+
+@router.post("/quote_async")
+async def generate_quote_async(request: QueryRequest):
+    task = generate_quote_task.delay(request.query)
+    return {"task_id": task.id, "status": "queued"}
+
+@router.post("/poem_async")
+async def generate_poem_async(request: QueryRequest):
+    task = generate_new_poem_task.delay(request.query)
     return {"task_id": task.id, "status": "queued"}
 
 @router.get("/result/{task_id}")

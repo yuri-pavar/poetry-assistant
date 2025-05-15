@@ -12,20 +12,20 @@ router = Router()
 
 MAIN_URL = "http://web:8001/api/"
 
-class RequestQA(StatesGroup):
+class RequestQuote(StatesGroup):
     query = State()
 
-@router.message(Command("askme"))
+@router.message(Command("quote"))
 async def cmd_qa(message: Message, state: FSMContext):
     await message.answer("✍️ Введите ваш запрос:")
-    await state.set_state(RequestQA.query)
+    await state.set_state(RequestQuote.query)
 
-@router.message(RequestQA.query)
+@router.message(RequestQuote.query)
 async def handle_query(message: Message, state: FSMContext):
     await message.answer("⏳ Думаю...")
     try:
         response = requests.post(
-            url=MAIN_URL+"generate_async",
+            url=MAIN_URL+"quote_async",
             json={"query": message.text},
             timeout=60
         )

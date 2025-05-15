@@ -10,9 +10,11 @@ rag, cntx = get_pipeline()
 
 @app.post("/get_context")
 def build_context(query: RagQuery):
+    print('[RAG_SVC_MAIN - add_metadata]', query.add_metadata)
     context = cntx.prepare_context(
         query=query.query,
-        response={"keywords": query.filters.get("keywords", []), "authors": query.filters.get("author", []), "poems": query.filters.get("name", []), "is_direct": 0},
+        response={"keywords": query.filters.get("keywords", []), "authors": query.filters.get("authors", []), "poems": query.filters.get("name", []), "is_direct": 0},
+        add_metadata=query.add_metadata,
         rag_method=query.method,
         k=query.k
     )

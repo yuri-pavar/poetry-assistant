@@ -1,5 +1,5 @@
 from app.celery import celery_app
-from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN, DATA_PATH, AUTHORS_COL, POEMS_COL
+from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN, DATA_PATH, AUTHORS_COL, POEMS_COL, USER_PROMPT_POEM
 from app.core.generate_vllm import generate_sync
 from app.core.rag_client import get_context_from_rag
 from app.core.preprocessor import Preprocessor
@@ -20,9 +20,35 @@ def generate_poetry_task(query: str):
     if not ner.get("is_direct"):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
-    context = get_context_from_rag(query, ner)
+    print('[NER]', ner)
+    context = get_context_from_rag(query, ner, add_metadata=True)
     print('[CONTEXT]', context)
     prompt = USER_PROMPT_MAIN.format(context=context, query=query)
+    response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
+    
+    return {"query": query, "response": response}
+
+@celery_app.task(name="app.celery.tasks.generate_quote_task")
+def generate_quote_task(query: str):
+    ner = preprocessor.get_query_ner(query, USER_PROMPT_NER)
+    if not ner.get("is_direct"):
+        keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
+        ner["keywords"] = keywords
+    print('[NER]', ner)
+    context = get_context_from_rag(query, ner, add_metadata=True)
+    
+    return {"query": query, "response": context}
+
+@celery_app.task(name="app.celery.tasks.generate_new_poem_task")
+def generate_new_poem_task(query: str):
+    ner = preprocessor.get_query_ner(query, USER_PROMPT_NER)
+    if not ner.get("is_direct"):
+        keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
+        ner["keywords"] = keywords
+    print('[NER]', ner)
+    context = get_context_from_rag(query, ner, add_metadata=False)
+    print('[CONTEXT]', context)
+    prompt = USER_PROMPT_POEM.format(context=context, query=query)
     response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
     
     return {"query": query, "response": response}

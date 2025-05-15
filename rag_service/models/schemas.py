@@ -7,3 +7,4 @@ class RagQuery(BaseModel):
     method: str = "similarity"
     k: int = 5
     filters: Optional[Dict] = {}
+    add_metadata: bool

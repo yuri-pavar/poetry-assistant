@@ -53,7 +53,7 @@ class ContextConstructor:
         chunks = self.splitter.split_text(texts)
         return chunks[0] if chunks else texts
 
-    def prepare_context(self, query, response, rag_method="similarity", k=5):
+    def prepare_context(self, query, response, add_metadata, rag_method="similarity", k=5):
       filters = {}
       if response['is_direct'] == 1:
         texts = self._get_full_texts(response['authors'], response['poems'])
@@ -63,18 +63,18 @@ class ContextConstructor:
           rag_query = ', '.join(response['keywords'])
         else:
           rag_query = query
-
         if response.get("authors"):
             filters["author"] = {"$in": response["authors"]}
         if response.get("poems"):
             filters["name"] = {"$in": response["poems"]}
-
         results = self.rag_svc.search(query, rag_query, method=rag_method, k=k, filters=filters)
+        print('[RAG - add_metadata]', add_metadata)
         if results:
           context = []
           for doc in results:
-            context.append(f"{doc.metadata[self.authors_col] if doc.metadata.get(self.authors_col) else ''} '{doc.metadata[self.poems_col] if doc.metadata.get(self.poems_col) else ''}':")
-            context.append(doc.page_content)
+            if add_metadata:
+              context.append(f"{doc.metadata[self.authors_col] if doc.metadata.get(self.authors_col) else ''} '{doc.metadata[self.poems_col] if doc.metadata.get(self.poems_col) else "'название неизвестно'"}':")
+            context.append(doc.page_content.replace('search_document: ', ''))
           context = "\n\n".join(context)
         else:
           context = ""
