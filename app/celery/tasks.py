@@ -21,7 +21,7 @@ def generate_poetry_task(query: str):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
     print('[NER]', ner)
-    context = get_context_from_rag(query, ner, add_metadata=True)
+    context = get_context_from_rag(query, ner, add_metadata=True, qcntx=True)
     print('[CONTEXT]', context)
     prompt = USER_PROMPT_MAIN.format(context=context, query=query)
     response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
@@ -29,13 +29,13 @@ def generate_poetry_task(query: str):
     return {"query": query, "response": response}
 
 @celery_app.task(name="app.celery.tasks.generate_quote_task")
-def generate_quote_task(query: str):
+def generate_quote_task(query: str, k: int):
     ner = preprocessor.get_query_ner(query, USER_PROMPT_NER)
     if not ner.get("is_direct"):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
     print('[NER]', ner)
-    context = get_context_from_rag(query, ner, add_metadata=True)
+    context = get_context_from_rag(query, ner, add_metadata=True, qcntx=False, k=k)
     
     return {"query": query, "response": context}
 
@@ -46,7 +46,7 @@ def generate_new_poem_task(query: str):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
     print('[NER]', ner)
-    context = get_context_from_rag(query, ner, add_metadata=False)
+    context = get_context_from_rag(query, ner, add_metadata=False, qcntx=True)
     print('[CONTEXT]', context)
     prompt = USER_PROMPT_POEM.format(context=context, query=query)
     response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)

@@ -10,7 +10,7 @@ from FlagEmbedding import FlagReranker
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-def get_pipeline():
+def get_pipeline(rag_dir=None):
 
     data = pd.read_csv(DATA_PATH)
     
@@ -19,9 +19,12 @@ def get_pipeline():
         model_kwargs={"device": device}
     )
 
-    reranker = FlagReranker(RERANK_MODEL_NAME, use_fp16=True, device=device)
+    reranker = FlagReranker(RERANK_MODEL_NAME, use_fp16=True, trust_remote_code=True, device=device)
 
-    rag = RAGService(embed_model, reranker, data)
+    if rag_dir:
+        rag = RAGService(embed_model, reranker, data, persist_directory=rag_dir)
+    else:
+        rag = RAGService(embed_model, reranker, data)
 
     if os.path.exists(CHROMA_DIR) and os.listdir(CHROMA_DIR):
         rag.load_db()

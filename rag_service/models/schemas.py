@@ -8,3 +8,4 @@ class RagQuery(BaseModel):
     k: int = 5
     filters: Optional[Dict] = {}
     add_metadata: bool
+    qcntx: bool
