@@ -1,6 +1,6 @@
 from app.celery import celery_app
 from app.core.config import SYSTEM_PROMPT, USER_PROMPT_NER, USER_PROMPT_REWRITING, USER_PROMPT_MAIN, DATA_PATH, AUTHORS_COL, POEMS_COL, USER_PROMPT_POEM
-from app.core.generate_vllm import generate_sync
+from app.core.generate_vllm import generate_sync, load_lora, unload_lora
 from app.core.rag_client import get_context_from_rag
 from app.core.preprocessor import Preprocessor
 import pandas as pd
@@ -49,6 +49,11 @@ def generate_new_poem_task(query: str):
     context = get_context_from_rag(query, ner, add_metadata=False, qcntx=True)
     print('[CONTEXT]', context)
     prompt = USER_PROMPT_POEM.format(context=context, query=query)
-    response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
-    
+
+    load_lora('poetry', '/app/data/lora-poetry')
+    print('[LORA] - load')
+    response = generate_sync(prompt, use_lora='poetry', system_prompt=SYSTEM_PROMPT, max_tokens=400)
+    unload_lora('poetry')
+    print('[LORA] - unload')
+
     return {"query": query, "response": response}

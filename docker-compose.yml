@@ -62,6 +62,7 @@ services:
       - "8000:8000"
     volumes:
       - /home/user/.cache/huggingface:/root/.cache/huggingface
+      - ./data:/app/data
     deploy:
       resources:
         reservations:
