@@ -96,4 +96,5 @@ POEMS_COL = 'name'
 TXT_COL = 'text'
 
 VLLM_API_URL = 'http://vllm:8000/v1/chat/completions'
+VLLM_API_LORA_UPLOAD_URL = 'http://vllm:8000/v1'
 RAG_SERVICE_URL = 'http://rag:8100'

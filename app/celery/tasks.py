@@ -24,7 +24,7 @@ def generate_poetry_task(query: str):
     context = get_context_from_rag(query, ner, add_metadata=True, qcntx=True)
     print('[CONTEXT]', context)
     prompt = USER_PROMPT_MAIN.format(context=context, query=query)
-    response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT, max_tokens=400)
+    response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT)
     
     return {"query": query, "response": response}
 
@@ -50,10 +50,19 @@ def generate_new_poem_task(query: str):
     print('[CONTEXT]', context)
     prompt = USER_PROMPT_POEM.format(context=context, query=query)
 
-    load_lora('poetry', '/app/data/lora-poetry')
+    if 'Александр Пушкин' in ner.get("authors", []):
+        # load_lora('poetry_pushkin', '/app/data/lora-poetry-pushkin')
+        lora_name = 'pushkin'
+        lora_path = '/app/data/lora-poetry-pushkin'
+    else:
+        # load_lora('poetry', '/app/data/lora-poetry')
+        lora_name = 'poetry'
+        lora_path = '/app/data/lora-poetry'
+    load_lora(lora_name, lora_path)
     print('[LORA] - load')
-    response = generate_sync(prompt, use_lora='poetry', system_prompt=SYSTEM_PROMPT, max_tokens=400)
-    unload_lora('poetry')
+    # response = generate_sync(prompt, use_lora='poetry', system_prompt=SYSTEM_PROMPT, max_tokens=400)
+    response = generate_sync(prompt, use_lora=lora_name, system_prompt=SYSTEM_PROMPT, max_tokens=400)
+    unload_lora(lora_name)
     print('[LORA] - unload')
 
     return {"query": query, "response": response}

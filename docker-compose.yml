@@ -70,6 +70,7 @@ services:
             - capabilities: [gpu]
     environment:
       - MODEL_NAME=${VLLM_MODEL_NAME}
+      - VLLM_ALLOW_RUNTIME_LORA_UPDATING=True
 
   nginx:
     image: nginx:alpine

@@ -1,7 +1,8 @@
 fastapi
 uvicorn[standard]
 pydantic
-transformers>=4.39
+# transformers>=4.39
+transformers==4.51.3
 accelerate>=0.26.0
 torch>=2.0
 sentence-transformers

@@ -1,6 +1,6 @@
 import requests
 import os
-from app.core.config import VLLM_API_URL, MODEL_NAME, SYSTEM_PROMPT
+from app.core.config import VLLM_API_URL, MODEL_NAME, SYSTEM_PROMPT, VLLM_API_LORA_UPLOAD_URL
 
 
 def generate_sync(prompt: str, use_lora=None, system_prompt: str = SYSTEM_PROMPT, max_tokens: int = 1024, temperature: float = 0.7, top_p: float = 0.9) -> str:
@@ -37,7 +37,8 @@ def generate_sync(prompt: str, use_lora=None, system_prompt: str = SYSTEM_PROMPT
 def load_lora(lora_name: str, lora_path: str) -> bool:
     try:
         payload = {"lora_name": lora_name, "lora_path": lora_path}
-        resp = requests.post(f"{VLLM_API_URL}/load_lora_adapter", json=payload, timeout=10)
+        # resp = requests.post(f"{VLLM_API_URL}/load_lora_adapter", json=payload, timeout=10)
+        resp = requests.post(f"{VLLM_API_LORA_UPLOAD_URL}/load_lora_adapter", json=payload, timeout=10)
         return resp.status_code == 200
     except Exception as e:
         print(f"[load_lora] Ошибка: {e}")
@@ -47,7 +48,8 @@ def load_lora(lora_name: str, lora_path: str) -> bool:
 def unload_lora(lora_name: str) -> bool:
     try:
         payload = {"lora_name": lora_name}
-        resp = requests.post(f"{VLLM_API_URL}/unload_lora_adapter", json=payload, timeout=10)
+        # resp = requests.post(f"{VLLM_API_URL}/unload_lora_adapter", json=payload, timeout=10)
+        resp = requests.post(f"{VLLM_API_LORA_UPLOAD_URL}/unload_lora_adapter", json=payload, timeout=10)
         return resp.status_code == 200
     except Exception as e:
         print(f"[unload_lora] Ошибка: {e}")
