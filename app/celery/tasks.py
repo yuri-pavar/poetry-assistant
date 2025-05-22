@@ -57,7 +57,7 @@ def generate_new_poem_task(query: str):
     else:
         # load_lora('poetry', '/app/data/lora-poetry')
         lora_name = 'poetry'
-        lora_path = '/app/data/lora-poetry'
+        lora_path = '/app/data/lora-poetry2'
     load_lora(lora_name, lora_path)
     print('[LORA] - load')
     # response = generate_sync(prompt, use_lora='poetry', system_prompt=SYSTEM_PROMPT, max_tokens=400)
