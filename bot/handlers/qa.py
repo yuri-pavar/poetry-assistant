@@ -4,8 +4,10 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
+from aiogram.enums import ParseMode
 import requests
 import os
+from .utils import prepare_for_html
 
 
 router = Router()
@@ -36,7 +38,9 @@ async def handle_query(message: Message, state: FSMContext):
             res = requests.get(MAIN_URL + f"result/{task_id}")
             data = res.json()
             if data.get("status") == "completed":
-                await message.answer(data["result"]["response"])
+                txt_response = prepare_for_html(data["result"]["response"])
+                # await message.answer(data["result"]["response"], parse_mode=ParseMode.MARKDOWN_V2)
+                await message.answer(txt_response, parse_mode=ParseMode.HTML)
                 break
             await asyncio.sleep(2)
         else:

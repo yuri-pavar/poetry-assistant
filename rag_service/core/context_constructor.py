@@ -35,24 +35,17 @@ class ContextConstructor:
         return name.replace('ё', 'е').lower().strip()
 
     def _normalize_poem(self, name):
-        # print('[DIRECT=1] name', name)
         res = re.sub(r'[^а-яА-Яa-zA-Z0-9 ]', '', name).lower().strip()
-        # print('[DIRECT=1] res', res)
         return res
 
     def _get_full_texts(self, authors, poems):
         results = []
-        # print('[DIRECT=1] authors', authors)
         norm_authors = [self._normalize_author(a) for a in authors]
-        # print('[DIRECT=1] norm_authors', norm_authors)
-        # print('[DIRECT=1] poems', poems)
         norm_poems = [self._normalize_poem(p) for p in poems]
-        # print('[DIRECT=1] norm_poems', norm_poems)
 
         res = []
         for a, p in zip(norm_authors, norm_poems):
           all_poem = self.data_ini.loc[(self.data_ini.norm_author == a) & (self.data_ini.norm_poem == p), self.txt_col].values#[0]
-          # print('[DIRECT=1] all_poem', all_poem.shape)
           if all_poem.shape[0] > 0:
             res.append(f"{a} '{p}':")
             res.append(all_poem[0])
@@ -66,11 +59,8 @@ class ContextConstructor:
     def prepare_context(self, query, response, add_metadata, rag_method="similarity", k=5):
       filters = {}
       if response['is_direct'] == 1:
-        # print('[DIRECT=1]', response)
         texts = self._get_full_texts(response['authors'], response['poems'])
-        # print('[DIRECT=1] texts', texts)
         context = self._truncate_texts(texts) if texts else ""
-        # print('[DIRECT=1] context', context)
       else:
         if response.get('keywords'):
           rag_query = ', '.join(response['keywords'])
@@ -81,7 +71,6 @@ class ContextConstructor:
         if response.get("poems"):
             filters["name"] = {"$in": response["poems"]}
         results = self.rag_svc.search(query, rag_query, method=rag_method, k=k, filters=filters)
-        print('[RAG - add_metadata]', add_metadata)
         if results:
           context = []
           for doc in results:
@@ -91,5 +80,4 @@ class ContextConstructor:
           context = "\n\n".join(context)
         else:
           context = ""
-      # print('[DIRECT=1] context', context)
       return context

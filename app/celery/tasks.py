@@ -20,9 +20,7 @@ def generate_poetry_task(query: str):
     if not ner.get("is_direct"):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
-    print('[NER]', ner)
     context = get_context_from_rag(query, ner, add_metadata=True, qcntx=True)
-    print('[CONTEXT]', context)
     prompt = USER_PROMPT_MAIN.format(context=context, query=query)
     response = generate_sync(prompt, system_prompt=SYSTEM_PROMPT)
     
@@ -34,7 +32,6 @@ def generate_quote_task(query: str, k: int):
     if not ner.get("is_direct"):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
-    print('[NER]', ner)
     context = get_context_from_rag(query, ner, add_metadata=True, qcntx=False, k=k)
     
     return {"query": query, "response": context}
@@ -45,9 +42,7 @@ def generate_new_poem_task(query: str):
     if not ner.get("is_direct"):
         keywords = preprocessor.get_query_rewrite(query, USER_PROMPT_REWRITING)
         ner["keywords"] = keywords
-    print('[NER]', ner)
     context = get_context_from_rag(query, ner, add_metadata=False, qcntx=True)
-    print('[CONTEXT]', context)
     prompt = USER_PROMPT_POEM.format(context=context, query=query)
 
     if 'Александр Пушкин' in ner.get("authors", []):
@@ -59,10 +54,8 @@ def generate_new_poem_task(query: str):
         lora_name = 'poetry'
         lora_path = '/app/data/lora-poetry2'
     load_lora(lora_name, lora_path)
-    print('[LORA] - load')
     # response = generate_sync(prompt, use_lora='poetry', system_prompt=SYSTEM_PROMPT, max_tokens=400)
     response = generate_sync(prompt, use_lora=lora_name, system_prompt=SYSTEM_PROMPT, max_tokens=400)
     unload_lora(lora_name)
-    print('[LORA] - unload')
 
     return {"query": query, "response": response}
